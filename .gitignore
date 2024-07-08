@@ -1,0 +1,16 @@
+*.log
+*.pyc
+__pycache__
+db.sqlite3
+media
+
+# Environments 
+.env 
+.venv 
+env/ 
+venv/ 
+venv
+../venv
+ENV/ 
+env.bak/ 
+venv.bak/ 
