@@ -1,29 +1,30 @@
-import unittest
-from rest_framework_simplejwt.tokens import RefreshToken
-from django.test import TestCase
-from users.models import User
+import pytest
+from rest_framework.test import APIClient
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
-class TokenGenerationTest(TestCase):
-    def setUp(self):
-        self.user = User.objects.create_user(
-            email="testuser@example.com",
-            firstName="Test",
-            lastName="User",
-            password="password123",
-        )
+@pytest.fixture
+def api_client():
+    return APIClient()
 
-    def test_token_expiry(self):
-        refresh = RefreshToken.for_user(self.user)
-        access_token = refresh.access_token
-        self.assertTrue(access_token)
+@pytest.fixture
+def user(db):
+    return User.objects.create_user(
+        email="testuser@example.com",
+        firstName="Test",
+        lastName="User",
+        password="testpassword"
+    )
 
-    def test_token_user_details(self):
-        refresh = RefreshToken.for_user(self.user)
-        access_token = refresh.access_token
-        user_id = access_token.payload["user_id"]
-        self.assertEqual(user_id, str(self.user.userId))
+def test_token_user_details(api_client, user):
+    url = "/auth/login"
+    data = {"email": user.email, "password": "testpassword"}
+    response = api_client.post(url, data)
+    assert response.status_code == 200
 
+    tokens = response.data["data"]["accessToken"]
+    decoded_token = api_client.get("/auth/token/decode", {"token": tokens})
+    user_id = decoded_token.data["user_id"]
 
-if __name__ == "__main__":
-    unittest.main()
+    assert user_id == str(user.userId)
