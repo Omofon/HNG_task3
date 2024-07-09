@@ -170,7 +170,14 @@ class OrganisationDetailView(generics.RetrieveAPIView):
         return Organisation.objects.filter(users=self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
-        organisation = self.get_object()
+        organisation = get_object_or_404(Organisation, orgId=kwargs["orgId"])
+        if not organisation.users.filter(id=request.user.id).exists():
+            return Response(
+                {
+                    "detail": "You do not have permission to access this organization's data."
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = self.get_serializer(organisation)
         return Response(
             {
