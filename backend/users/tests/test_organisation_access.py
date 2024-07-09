@@ -1,34 +1,40 @@
-import unittest
-from django.urls import reverse
+import pytest
 from rest_framework.test import APIClient
-from django.test import TestCase
-from users.models import User, Organisation
+from django.contrib.auth import get_user_model
+from users.models import Organisation
 
+User = get_user_model()
 
-class OrganisationAccessTest(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.user1 = User.objects.create_user(
-            email="user1@example.com",
-            firstName="User",
-            lastName="One",
-            password="password123",
-        )
-        self.user2 = User.objects.create_user(
-            email="user2@example.com",
-            firstName="User",
-            lastName="Two",
-            password="password123",
-        )
-        self.org1 = Organisation.objects.create(name="Org1")
-        self.org1.users.add(self.user1)
+@pytest.fixture
+def api_client():
+    return APIClient()
 
-    def test_user_cannot_see_other_organisation_data(self):
-        self.client.force_authenticate(user=self.user2)  # Authenticate user2
-        url = reverse("organisation-detail", args=[self.org1.orgId])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 403)
+@pytest.fixture
+def user(db):
+    return User.objects.create_user(
+        email="testuser@example.com",
+        firstName="Test",
+        lastName="User",
+        password="testpassword"
+    )
 
+@pytest.fixture
+def another_user(db):
+    return User.objects.create_user(
+        email="anotheruser@example.com",
+        firstName="Another",
+        lastName="User",
+        password="anotherpassword"
+    )
 
-if __name__ == "__main__":
-    unittest.main()
+@pytest.fixture
+def organisation(db, user):
+    organisation = Organisation.objects.create(name="Test Organisation", description="A test organisation")
+    organisation.users.add(user)
+    return organisation
+
+def test_user_cannot_see_other_organisation_data(api_client, user, another_user, organisation):
+    api_client.force_authenticate(user=another_user)
+    url = f"/api/organisations/{organisation.orgId}/"
+    response = api_client.get(url)
+    assert response.status_code == 403
