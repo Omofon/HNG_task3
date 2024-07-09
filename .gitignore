@@ -3,7 +3,7 @@
 __pycache__
 db.sqlite3
 media
-
+render.yaml
 # Environments 
 .env 
 .venv 
