@@ -11,12 +11,15 @@ print(f"SECRET_KEY: {SECRET_KEY}")
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-DEBUG = True
+# SECURITY WARNING: keep the secret key used in production secret!
+SECRET_KEY = os.getenv("SECRET_KEY")
 
-ALLOWED_HOSTS = ["127.0.0.1", ".herokuapp.com"]
+# SECURITY WARNING: don't run with debug turned on in production!
+DEBUG = os.getenv("DEBUG", "0").lower() in ["true", "t", "1"]
+
+ALLOWED_HOSTS = os.getenv("ALLOWED_HOSTS").split(" ")
 
 INSTALLED_APPS = [
-    "whitenoise.runserver_nostatic",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -30,7 +33,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -63,11 +65,11 @@ WSGI_APPLICATION = "backend.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.environ.get("DB_NAME"),
+        "NAME": "HNG-task3",
         "USER": os.environ.get("DB_USER"),
         "PASSWORD": os.environ.get("DB_PASSWORD"),
-        "HOST": os.environ.get("DB_HOST"),
-        "PORT": os.environ.get("DB_PORT"),
+        "HOST": "localhost",
+        "PORT": "5500",
     }
 }
 
@@ -115,7 +117,3 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
 }
-
-WHITENOISE_USE_FINDERS = True
-
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
