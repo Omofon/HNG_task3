@@ -19,7 +19,6 @@ pathspec==0.10.1
 psycopg2==2.9.9
 psycopg2-binary==2.9.9
 PyJWT==1.7.1
-pypiwin32==223
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 PyYAML==6.0.1
