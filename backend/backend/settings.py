@@ -7,14 +7,12 @@ load_dotenv()
 
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-print(f"SECRET_KEY: {SECRET_KEY}")
-
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "127.0.0.1",
+    "*",
 ]
 
 INSTALLED_APPS = [
@@ -88,10 +86,8 @@ USE_I18N = True
 USE_TZ = True
 
 STATIC_URL = "static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
