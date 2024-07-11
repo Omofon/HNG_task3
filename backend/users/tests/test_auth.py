@@ -1,4 +1,3 @@
-# users/tests/auth_spec.py
 import unittest
 from rest_framework.test import APIClient
 from django.urls import reverse
